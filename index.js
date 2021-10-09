@@ -3,7 +3,15 @@ const { Client, Collection, Intents } = require('discord.js');
 const { token } = require('./config.json');
 const fs = require('fs');
 // Create a new client instance
-const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const client = new Client({
+    presence: {
+        activities: [{
+            name: 'Bloom Into You',
+            type: 'WATCHING',
+        }],
+    },
+    intents: [Intents.FLAGS.GUILDS] 
+});
 
 // Make an array and fill it with the events
 const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
@@ -30,7 +38,5 @@ for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
     client.commands.set(command.data.name, command);
 }
-
-
 
 client.login(token);
