@@ -1,19 +1,24 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
-const fs = require ('fs');
-const readline = require('readline');
+const booru = require('booru');
 
 module.exports = {
     data : new SlashCommandBuilder()
         .setName('yagakimi')
-        .setDescription('Sends a random Bloom Into You photo.'),
+        .setDescription('Sends a random Nakatani-sensei Bloom into You illustration.'),
+
     async execute(interaction) {
-        const array = fs.readFileSync('./commands/images/yagakimi/links.yagakimi').toString().split('\n');
-        let img = array[Math.floor(Math.random()*array.length)];
-        const embed = new MessageEmbed()
-            .setTitle('A Bloom Into You photo for you:')
-            .setImage(img);
-        
-        await interaction.reply({embeds: [embed]});
+        booru.search('safebooru', ['yagate_kimi_ni_naru', 'nakatani_nio'], {limit: 1, random: true})
+            .then(posts => {
+                for (let post of posts) {
+                    const embed = new MessageEmbed()
+                        .setTitle('A random Bloom into You image:')
+                        .addFields(
+                            { name: 'Post link:', value: post.postView }
+                        )
+                        .setImage(post.fileUrl);
+                    interaction.reply({embeds: [embed]});
+                }
+            })
     },
 };
